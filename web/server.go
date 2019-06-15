@@ -9,6 +9,7 @@ import (
 	"republicofminer-client-go/explorer"
 	"republicofminer-client-go/explorer/api"
 	"republicofminer-client-go/protocol/converter/apitoprotocol"
+	"republicofminer-client-go/protocol/format/address32"
 	"strconv"
 
 	"github.com/gorilla/mux"
@@ -22,6 +23,7 @@ func Run() {
 	router.StrictSlash(false)
 	router.HandleFunc(`/block/{id}`, handleblock).Methods("GET")
 	router.HandleFunc(`/tx/{hash}`, handletx).Methods("GET")
+	router.HandleFunc(`/account/{address}`, handleaccount).Methods("GET")
 
 	// Start the server
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", 3000), router))
@@ -76,6 +78,27 @@ func handletx(writer http.ResponseWriter, request *http.Request) {
 	}
 
 	encoded, _ := json.Marshal(tx)
+	// fmt.Println(encoded)
+	writer.Write(encoded)
+}
+
+func handleaccount(writer http.ResponseWriter, request *http.Request) {
+	params := mux.Vars(request)
+	address, ok := params["address"]
+	if !ok {
+		http.Error(writer, "Error getting the address", http.StatusInternalServerError)
+		return
+	}
+
+	_, _, err := address32.Decode(address)
+	if err != nil {
+		writer.Write([]byte("Invalid address !"))
+		return
+	}
+
+	account := explorer.GetAccount(address)
+
+	encoded, _ := json.Marshal(account)
 	// fmt.Println(encoded)
 	writer.Write(encoded)
 }

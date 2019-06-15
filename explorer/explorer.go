@@ -40,9 +40,10 @@ func SendTransaction(transaction *api.Transaction, signatures []*api.Signature) 
 	return data.Hash
 }
 
-func GetAccount(encoded string) map[string]float64 {
+// TODO make an account struct
+func GetAccount(encoded string) *api.GetAccountResponse {
 	request := api.GetAccountRequest{Address: encoded}
 	response := <-client.Request(client.RequestMessage(&request, "GetAccountRequest"))
 	data := response.Data.(*api.GetAccountResponse)
-	return data.Balance
+	return data
 }

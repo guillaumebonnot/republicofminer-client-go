@@ -3,6 +3,7 @@ package api
 import (
 	"encoding/json"
 	"errors"
+	"log"
 	api "republicofminer-client-go/common/json"
 	"republicofminer-client-go/protocol"
 )
@@ -157,22 +158,22 @@ func (declaration *TxDeclaration) UnmarshalJSON(bytes []byte) error {
 func CreateDeclaration(t protocol.DeclarationType, bytes []byte) (interface{}, error) {
 	switch t {
 	case protocol.TxHashLock:
-		var tmp = HashLock{}
-		err := json.Unmarshal(bytes, &tmp)
+		var tmp = &HashLock{}
+		err := json.Unmarshal(bytes, tmp)
 		if err != nil {
 			return nil, err
 		}
 		return tmp, nil
 	case protocol.TxMultiSignature:
-		var tmp = MultiSignature{}
-		err := json.Unmarshal(bytes, &tmp)
+		var tmp = &MultiSignature{}
+		err := json.Unmarshal(bytes, tmp)
 		if err != nil {
 			return nil, err
 		}
 		return tmp, nil
 	case protocol.TxSecret:
-		var tmp = SecretRevelation{}
-		err := json.Unmarshal(bytes, &tmp)
+		var tmp = &SecretRevelation{}
+		err := json.Unmarshal(bytes, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -193,7 +194,29 @@ func (declaration *TxDeclaration) MarshalJSON() ([]byte, error) {
 		tmp.Type = declaration.Type
 		tmp.SecretRevelation.Secret = declaration.Declaration.(*SecretRevelation).Secret
 		d = tmp
+	case protocol.TxMultiSignature:
+		var tmp struct {
+			Type protocol.DeclarationType
+			MultiSignature
+		}
+		tmp.Type = declaration.Type
+		multi := declaration.Declaration.(*MultiSignature)
+		tmp.MultiSignature.Address = multi.Address
+		tmp.MultiSignature.Required = multi.Required
+		tmp.MultiSignature.Signers = multi.Signers
+		d = tmp
+	case protocol.TxHashLock:
+		var tmp struct {
+			Type protocol.DeclarationType
+			HashLock
+		}
+		tmp.Type = declaration.Type
+		hashlock := declaration.Declaration.(*HashLock)
+		tmp.HashLock.Address = hashlock.Address
+		tmp.HashLock.SecretHash = hashlock.SecretHash
+		d = tmp
 	default:
+		log.Printf("MarshalJSON Unkown type : %d\n", declaration.Type)
 		panic(0)
 	}
 
