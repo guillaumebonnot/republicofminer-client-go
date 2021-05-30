@@ -20,14 +20,14 @@ Get block by hash : http://localhost:3000/block/XZ6uMgCbVnDmj10QMjD8g7pquULgtfBu
 The server connects to the explorer to get the data and displays it in json format.
 
 ## explorer
-The package to access the blockchain explorer
+The package to access the blockchain explorer.
 
 ## miner
 The miner loads the wallet and continuously requests a mining task to the server then solves it.\
 The miner connects both to the explorer and the game server.
 
 ## republicofminer
-The package to access the game server
+The package to access the game server.
 
 ## protocol
 The procotocol folder contains code related the representation of the elements of the blockchain.\
@@ -37,7 +37,7 @@ More informations can be found here : https://github.com/caasiope/caasiope-block
 The wallet loads or create a private key in the database.
 
 ## vault
-The vault is a SQLite database where you can store data encyrpted by the password associated a key.
+The vault is a SQLite database where you can store data encrypted by the password associated with a key.
 
 
 
